@@ -31,11 +31,11 @@ RUN apt-get update \
 
 # libvips dependencies for libvips build
 RUN apt-get install -y python3-venv
-RUN python3 -m venv ~/.local
+RUN mkdir -p /opt/venv && python3 -m venv /opt/venv
 RUN echo $PATH
-ENV PATH="$PATH:~/.local/bin"
+ENV PATH="$PATH:/opt/venv/bin"
 RUN echo $PATH
-RUN ~/.local/bin/pip3 install meson
+RUN /opt/venv/bin/pip3 install meson
 
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y \
@@ -68,7 +68,7 @@ ARG VIPS_URL=https://github.com/libvips/libvips/releases/download
 RUN wget ${VIPS_URL}/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz --no-check-certificate \
 	&& tar xf vips-${VIPS_VERSION}.tar.xz \
 	&& cd vips-${VIPS_VERSION} \
-	&& ~/.local/bin/meson build --buildtype=release --libdir=lib \
+	&& /opt/venv/bin/meson build --buildtype=release --libdir=lib \
 	&& cd build \
 	&& ninja \
 	&& ninja install
@@ -90,7 +90,7 @@ ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 # Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+ENV PATH="/opt/venv/bin/:$PATH"
 
 # RUN uv sync
 RUN uv pip install .
