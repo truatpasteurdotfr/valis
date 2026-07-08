@@ -104,7 +104,7 @@ RUN wget https://downloads.openmicroscopy.org/bio-formats/${BF_VERSION}/artifact
 ENV TORCH_HOME="/opt/torch"
 # Download pytorch model weights
 COPY ./docker/docker_download_weights.py docker_download_weights.py
-RUN python3 docker_download_weights.py
+RUN mkdir -p ${TORCH_HOME} && python3 docker_download_weights.py
 
 # Clean up
 RUN apt-get remove -y wget build-essential ninja-build && \
