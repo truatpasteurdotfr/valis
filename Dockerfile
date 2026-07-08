@@ -100,6 +100,8 @@ ENV PATH="${WKDIR}/.venv/bin:$PATH"
 # Install bioformats.jar in valis
 RUN wget https://downloads.openmicroscopy.org/bio-formats/${BF_VERSION}/artifacts/bioformats_package.jar -P valis
 
+# don't download into /root/.cache/torch/hub as no-one can use it there
+ENV TORCH_HOME="/opt/torch"
 # Download pytorch model weights
 COPY ./docker/docker_download_weights.py docker_download_weights.py
 RUN python3 docker_download_weights.py
