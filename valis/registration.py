@@ -561,7 +561,16 @@ class Slide(object):
         else:
             sxy = np.ones(2)
 
-        to_slide_transformer = transform.SimilarityTransform(scale=sxy)
+        # Ensure scale is a scalar if the array elements are close enough
+        if hasattr(sxy, '__len__') and len(sxy) > 1:
+            # If sx and sy are effectively the same, use the mean/first element
+            # This assumes isotropic scaling which is standard for SimilarityTransform
+            scale_val = float(sxy[0]) 
+            # Optional: Add a check if sxy[0] != sxy[1] if anisotropic scaling is critical
+        else:
+            scale_val = sxy
+
+        to_slide_transformer = transform.SimilarityTransform(scale=scale_val)
         overlap_bbox = warp_tools.bbox2xy(mask_bbox_xywh)
         scaled_overlap_bbox = to_slide_transformer(overlap_bbox)
         scaled_overlap_xywh = warp_tools.xy2bbox(scaled_overlap_bbox)
